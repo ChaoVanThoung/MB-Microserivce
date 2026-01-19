@@ -91,10 +91,11 @@ public class SecurityInit {
                 .redirectUris(uris -> {
                     uris.add("http://localhost:9090/login/oauth2/code/itp-standard");
                     uris.add("http://localhost:9090");
-                    uris.add("https://cstad.edu.kh/");
+                    uris.add("http://localhost:9999/login/oauth2/code/itp-standard");
+                    uris.add("http://localhost:9999");
                 })
                 .postLogoutRedirectUris(uris -> {
-                    uris.add("http://localhost:9090");
+                    uris.add("http://localhost:9999");
                 })
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC) //TODO: grant_type:client_credentials, client_id & client_secret, redirect_uri
                 .authorizationGrantTypes(grantTypes -> {

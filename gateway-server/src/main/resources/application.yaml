@@ -22,3 +22,26 @@ spring:
             locator:
               enabled: true
               lower-case-service-id: true
+
+
+  security:
+    oauth2:
+      client:
+        provider:
+          itp-standard:
+            issuer-uri: http://localhost:9090
+        registration:
+          itp-standard:
+            provider: itp-standard
+            client-id: itp-standard
+            client-secret: qwerqwer
+            redirect-uri: http://localhost:9999/login/oauth2/code/itp-standard
+            authorization-grant-type:
+              - authorization_code
+              - client_credentials
+              - refresh_token
+
+            scope:
+              - openid # Auto issue access token
+              - profile # Get profile
+              - email # Get email
