@@ -1,0 +1,14 @@
+eureka:
+  instance:
+    instance-id: ${spring.application.name}
+    prefer-ip-address: true
+
+server:
+  port: 20260
+spring:
+  application:
+    name: account
+  profiles:
+    active: dev
+  config:
+    import: optional:configserver:http://localhost:8888
