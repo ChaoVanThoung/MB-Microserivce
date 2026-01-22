@@ -28,6 +28,22 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/front-admin-bff " />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/front-admin-bff " />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/front-bff" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/front-bff" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/gateway-server" />
         <option name="modules">
           <set>

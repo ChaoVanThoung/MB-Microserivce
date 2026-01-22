@@ -15,14 +15,17 @@ public class SecurityConfig {
     public SecurityWebFilterChain webSecurity(ServerHttpSecurity http) {
 
         http.authorizeExchange(exchanges -> exchanges
+                .pathMatchers("/account/public/**").permitAll()
         .anyExchange().authenticated());
 
-        http.csrf(csrfSpec ->  csrfSpec.disable());
-        http.formLogin(formLoginSpec -> formLoginSpec.disable());
-        http.logout(logoutSpec -> logoutSpec.disable());
-        http.httpBasic(httpBasicSpec -> httpBasicSpec.disable());
+        http.csrf(ServerHttpSecurity.CsrfSpec::disable);
+        http.formLogin(ServerHttpSecurity.FormLoginSpec::disable);
+        http.logout(ServerHttpSecurity.LogoutSpec::disable);
+        http.httpBasic(ServerHttpSecurity.HttpBasicSpec::disable);
 
-        http.oauth2Login(Customizer.withDefaults());
+        http.oauth2ResourceServer(auth2 ->  auth2
+                .jwt(Customizer.withDefaults()));
+//        http.oauth2Login(Customizer.withDefaults());
 
         return http.build();
     }

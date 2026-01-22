@@ -107,11 +107,77 @@ public class SecurityInit {
                 .tokenSettings(tokenSettings)
                 .build();
 
+
+
+
+        var itpFrontBff = RegisteredClient.withId("itp-frontbff")
+                .clientId("itp-frontbff")
+                .clientSecret(passwordEncoder.encode("qwerqwer")) // store in secret manager
+                .scopes(scopes -> {
+                    scopes.add(OidcScopes.OPENID); // required!
+                    scopes.add(OidcScopes.PROFILE);
+                    scopes.add(OidcScopes.EMAIL);
+                })
+                .redirectUris(uris -> {
+                    uris.add("http://localhost:9990/login/oauth2/code/itp-frontbff");
+                    uris.add("http://localhost:9990");
+                })
+                .postLogoutRedirectUris(uris -> {
+                    uris.add("http://localhost:9990");
+                })
+
+
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC) //TODO: grant_type:client_credentials, client_id & client_secret, redirect_uri
+                .authorizationGrantTypes(grantTypes -> {
+                    grantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
+                })
+                .clientSettings(clientSettings)
+                .tokenSettings(tokenSettings)
+                .build();
+
+
+        var itpFrontadminBff = RegisteredClient.withId("itp-frontbff-admin")
+                .clientId("itp-frontbff-admin")
+                .clientSecret(passwordEncoder.encode("qwerqwer")) // store in secret manager
+                .scopes(scopes -> {
+                    scopes.add(OidcScopes.OPENID); // required!
+                    scopes.add(OidcScopes.PROFILE);
+                    scopes.add(OidcScopes.EMAIL);
+                })
+                .redirectUris(uris -> {
+                    uris.add("http://localhost:9991/login/oauth2/code/itp-frontbff-admin");
+                    uris.add("http://localhost:9991");
+                })
+                .postLogoutRedirectUris(uris -> {
+                    uris.add("http://localhost:9991");
+                })
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC) //TODO: grant_type:client_credentials, client_id & client_secret, redirect_uri
+                .authorizationGrantTypes(grantTypes -> {
+                    grantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
+                })
+                .clientSettings(clientSettings)
+                .tokenSettings(tokenSettings)
+                .build();
+
         RegisteredClient registeredClient = jpaRegisteredClientRepository.findByClientId("itp-standard");
         log.info("Registered client: {}", registeredClient);
 
+        RegisteredClient registeredClient2 = jpaRegisteredClientRepository.findByClientId("itp-frontbff");
+        log.info("Registered client: {}", registeredClient2);
+
+        RegisteredClient registeredClient3 = jpaRegisteredClientRepository.findByClientId("itp-frontbff-admin");
+        log.info("Registered client: {}", registeredClient2);
+
         if (registeredClient == null) {
             jpaRegisteredClientRepository.save(itpStandard);
+        }
+
+        if (registeredClient2 == null) {
+            jpaRegisteredClientRepository.save(itpFrontBff);
+        }
+
+        if (registeredClient3 == null) {
+            jpaRegisteredClientRepository.save(itpFrontadminBff);
         }
 
     }

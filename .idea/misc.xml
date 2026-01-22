@@ -5,6 +5,9 @@
     <file type="web" url="file://$PROJECT_DIR$/account-service" />
     <file type="web" url="file://$PROJECT_DIR$/customer-service" />
     <file type="web" url="file://$PROJECT_DIR$/eurekaserver" />
+    <file type="web" url="file://$PROJECT_DIR$/front-admin-bff " />
+    <file type="web" url="file://$PROJECT_DIR$/front-bff" />
+    <file type="web" url="file://$PROJECT_DIR$/gateway-server" />
     <file type="web" url="file://$PROJECT_DIR$/itp-configserver" />
     <file type="web" url="file://$PROJECT_DIR$/itp-identity-service" />
   </component>

@@ -15,7 +15,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
 
-        http.authorizeHttpRequests(requests -> requests.anyRequest().authenticated());
+        http.authorizeHttpRequests(requests -> requests
+                .requestMatchers("/public/**").permitAll()
+                .anyRequest().authenticated());
 
         http.csrf(token -> token.disable());
         http.httpBasic(token -> token.disable());
