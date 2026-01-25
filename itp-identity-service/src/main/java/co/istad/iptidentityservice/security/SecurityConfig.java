@@ -1,5 +1,8 @@
 package co.istad.iptidentityservice.security;
 
+import co.istad.iptidentityservice.domain.User;
+import co.istad.iptidentityservice.features.user.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,12 +16,26 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext;
+import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 import static org.springframework.security.authorization.SingleResultAuthorizationManager.permitAll;
 
@@ -30,6 +47,7 @@ public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     @Value("${spring.security.oauth2.authorizationserver.issuer}")
     private String issuerUri;
@@ -58,11 +76,22 @@ public class SecurityConfig {
                 new OAuth2AuthorizationServerConfigurer();
 
         http
+//                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+//                .with(authorizationServerConfigurer, (authorizationServer) ->
+//                        authorizationServer
+//                                .oidc(Customizer.withDefaults())	// Initialize `OidcConfigurer`
+//                )\
+
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, (authorizationServer) ->
                         authorizationServer
-                                .oidc(Customizer.withDefaults())	// Initialize `OidcConfigurer`
+                                .oidc(oidc -> oidc
+                                        .userInfoEndpoint(userInfo ->
+                                                userInfo.userInfoMapper(userInfoMapper())
+                                        )
+                                )
                 )
+
                 .authorizeHttpRequests((authorize) ->
                         authorize.anyRequest().authenticated()
                 );
@@ -97,6 +126,64 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    public Function<OidcUserInfoAuthenticationContext, OidcUserInfo> userInfoMapper() {
+        return context -> {
+            OidcUserInfoAuthenticationToken authentication = context.getAuthentication();
+            JwtAuthenticationToken principal = (JwtAuthenticationToken) authentication.getPrincipal();
+
+            String username = principal.getToken().getClaimAsString("sub");
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND, "User not found: " + username
+                    ));
+
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("sub", username);
+            claims.put("preferred_username", user.getUsername());
+            claims.put("email", user.getEmail());
+            claims.put("family_name", user.getFamilyName());
+            claims.put("given_name", user.getGivenName());
+            claims.put("name", user.getGivenName() + " " + user.getFamilyName());
+            claims.put("phone_number", user.getPhoneNumber());
+            claims.put("gender", user.getGender());
+            claims.put("birthdate", user.getDob() != null ? user.getDob().toString() : null);
+
+//            claims.put("picture", user.getProfileImage());
+//            claims.put("cover_image", user.getCoverImage());
+//            claims.put("roles", user.getRoles().stream()
+//                    .map(role -> role.getName())
+//                    .toList());
+
+            return new OidcUserInfo(claims);
+        };
+    }
+
+    @Bean
+    public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer(UserRepository userRepository){
+        return context -> {
+            if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType()) ||
+                    "id_token".equals(context.getTokenType().getValue())) {
+                Authentication principal = context.getPrincipal();
+
+                if (principal.getPrincipal() instanceof UserDetails userDetails) {
+                    User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(
+                            () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"user not found")
+                    );
+
+                    context.getClaims().claim("preferred_username", user.getUsername());
+                    context.getClaims().claim("email", user.getEmail());
+                    context.getClaims().claim("gender", user.getGender());
+                    context.getClaims().claim("family_name", user.getFamilyName());
+                    context.getClaims().claim("given_name", user.getGivenName());
+                    context.getClaims().claim("phone_number", user.getPhoneNumber());
+                    context.getClaims().claim("birthdate", user.getDob() != null ? user.getDob().toString() : null);
+
+                }
+            }
+        };
+    }
 
 
 }

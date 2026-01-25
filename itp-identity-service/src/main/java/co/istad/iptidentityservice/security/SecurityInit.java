@@ -41,13 +41,13 @@ public class SecurityInit {
             user.setUuid(UUID.randomUUID().toString());
             user.setUsername("Thoung168");
             user.setPassword(passwordEncoder.encode("qwer"));
-            user.setEmail("chaovanthoung168.com");
+            user.setEmail("chaovanthoung168@gmail.com");
             user.setDob(LocalDate.of(2004, 2, 23));
             user.setGender("Male");
             user.setProfileImage("default_profile.jpg");
             user.setCoverImage("default_cover.jpg");
-            user.setFamilyName("Chan");
-            user.setGivenName("Chhaya");
+            user.setFamilyName("Chao");
+            user.setGivenName("VanThoung");
             user.setPhoneNumber("0962226229");
             user.setAccountNonExpired(true);
             user.setAccountNonLocked(true);
@@ -76,7 +76,7 @@ public class SecurityInit {
                 .build();
 
         ClientSettings clientSettings = ClientSettings.builder()
-                .requireProofKey(true)
+                .requireProofKey(false)
                 .requireAuthorizationConsent(false)
                 .build();
 
@@ -166,7 +166,7 @@ public class SecurityInit {
         log.info("Registered client: {}", registeredClient2);
 
         RegisteredClient registeredClient3 = jpaRegisteredClientRepository.findByClientId("itp-frontbff-admin");
-        log.info("Registered client: {}", registeredClient2);
+        log.info("Registered client: {}", registeredClient3);
 
         if (registeredClient == null) {
             jpaRegisteredClientRepository.save(itpStandard);

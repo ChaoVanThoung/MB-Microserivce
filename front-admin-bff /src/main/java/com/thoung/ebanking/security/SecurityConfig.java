@@ -18,7 +18,7 @@ public class SecurityConfig {
         .anyExchange().authenticated());
 
         http.csrf(ServerHttpSecurity.CsrfSpec::disable);
-        http.formLogin(ServerHttpSecurity.FormLoginSpec::disable);
+//        http.formLogin(ServerHttpSecurity.FormLoginSpec::disable);
         http.logout(Customizer.withDefaults());
         http.httpBasic(ServerHttpSecurity.HttpBasicSpec::disable);
 

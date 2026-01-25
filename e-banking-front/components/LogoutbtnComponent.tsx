@@ -4,7 +4,12 @@
 
 import { useRouter } from "next/navigation";
 
-export default function LogoutBtnComponent() {
+export default function LogoutBtnComponent({
+  onLogout,
+}: {
+  onLogout: () => void;
+}) {
+
   const router = useRouter();
 
   const handleLogout = async () => {

@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 
 import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
 
@@ -26,6 +25,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import LogoutBtnComponent from "../LogoutbtnComponent";
+import { json } from "stream/consumers";
 
 interface MenuItem {
   title: string;
@@ -52,12 +54,12 @@ interface Navbar1Props {
   dashboard?: {
     title: string;
     url: string;
-  }
+  };
 }
 
 type IsAuthType = {
-  isAuthenticated: boolean
-}
+  isAuthenticated: boolean;
+};
 
 export const Navbar = ({
   logo = {
@@ -119,9 +121,20 @@ export const Navbar = ({
     login: { title: "Login", url: "/oauth2/authorization/itp-frontbff" },
   },
   dashboard = {
-    title: "Dashboard", url: "/dashboard"
-  }
+    title: "Dashboard",
+    url: "/dashboard",
+  },
 }: Navbar1Props) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    function checkAuth() {
+      fetch("/auth/is-authenticated")
+        .then((res) => res.json())
+        .then((json) => setIsAuthenticated(json.isAuthenticated));
+    }
+    checkAuth();
+  }, []);
 
   return (
     <section className="py-4">
@@ -145,9 +158,20 @@ export const Navbar = ({
             </div>
           </div>
           <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm">
-                <Link href='/login'>Log in</Link>
-            </Button>
+            {!isAuthenticated ? (
+              <Button asChild variant="outline" size="sm">
+                <Link href='/oauth2/authorization/itp-frontbff'>Log in</Link>
+              </Button>
+            ) : (
+              <Button asChild variant="outline" size="sm">
+                <Link
+                  className="text-red-700 hover:text-red-700"
+                  href='/logout'
+                >
+                  Log out
+                </Link>
+              </Button>
+            )}
           </div>
         </nav>
 
@@ -180,12 +204,12 @@ export const Navbar = ({
                   >
                     {menu.map((item) => renderMobileMenuItem(item))}
                   </Accordion>
-
+                  {/* 
                   <div className="flex flex-col gap-3">
                     <Button asChild variant="outline">
                       <Link href={auth.login.url}>{auth.login.title}</Link>
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </SheetContent>
             </Sheet>
