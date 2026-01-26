@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import co.istad.iptidentityservice.config.CustomUserDetails;
 import co.istad.iptidentityservice.domain.Client;
 import org.springframework.security.jackson.SecurityJacksonModules;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -21,6 +22,7 @@ import org.springframework.util.StringUtils;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 
 
 @Component
@@ -33,10 +35,12 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
         this.clientRepository = clientRepository;
 
         ClassLoader classLoader = getClass().getClassLoader();
+        BasicPolymorphicTypeValidator.Builder builder = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType(CustomUserDetails.class);
 //        BasicPolymorphicTypeValidator.Builder
 
         this.objectMapper = JsonMapper.builder()
-                .addModules(SecurityJacksonModules.getModules(classLoader))
+                .addModules(SecurityJacksonModules.getModules(classLoader, builder))
                 .addModule(new OAuth2AuthorizationServerJacksonModule())
                 .build();
 
