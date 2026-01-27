@@ -12,7 +12,7 @@ import java.util.Map;
 public class AccountController {
 
     @GetMapping
-    public Map<String, Object> unsecuredEndpoint() {
+    public Map<String, Object> securedEndpoint() {
         return Map.of("data",
                 "Account - Secured endpoint");
     }

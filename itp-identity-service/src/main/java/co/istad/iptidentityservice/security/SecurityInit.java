@@ -41,7 +41,7 @@ public class SecurityInit {
             user.setUuid(UUID.randomUUID().toString());
             user.setUsername("Thoung168");
             user.setPassword(passwordEncoder.encode("qwer"));
-            user.setEmail("chaovanthoung168@gmail.com");
+            user.setEmail("chaovanthoung16822@gmail.com");
             user.setDob(LocalDate.of(2004, 2, 23));
             user.setGender("Male");
             user.setProfileImage("default_profile.jpg");

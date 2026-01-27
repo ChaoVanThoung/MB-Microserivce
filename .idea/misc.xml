@@ -10,6 +10,7 @@
     <file type="web" url="file://$PROJECT_DIR$/gateway-server" />
     <file type="web" url="file://$PROJECT_DIR$/itp-configserver" />
     <file type="web" url="file://$PROJECT_DIR$/itp-identity-service" />
+    <file type="web" url="file://$PROJECT_DIR$/pipeline-service " />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="graalvm-21" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
