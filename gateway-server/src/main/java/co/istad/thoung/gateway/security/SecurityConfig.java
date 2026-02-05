@@ -15,8 +15,8 @@ public class SecurityConfig {
     public SecurityWebFilterChain webSecurity(ServerHttpSecurity http) {
 
         http.authorizeExchange(exchanges -> exchanges
-                .pathMatchers("/account/public/**").permitAll()
-        .anyExchange().authenticated());
+                .pathMatchers("/account/**").authenticated()
+        .anyExchange().permitAll());
 
         http.csrf(ServerHttpSecurity.CsrfSpec::disable);
         http.formLogin(ServerHttpSecurity.FormLoginSpec::disable);

@@ -1,7 +1,10 @@
 package co.istad.thoung.pipeline_service.controller;
 
 import co.istad.thoung.pipeline_service.client.AccountClient;
-import lombok.RequiredArgsConstructor;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,13 +13,34 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/client/account")
-@RequiredArgsConstructor
+@Slf4j
 public class AccountClientController {
 
     private final AccountClient accountClient;
+    private final CircuitBreaker circuitBreaker;
 
+    public AccountClientController(AccountClient accountClient, CircuitBreakerRegistry registry) {
+        this.accountClient = accountClient;
+        circuitBreaker = registry.circuitBreaker("account");
+    }
+
+//    @CircuitBreaker(name = "account", fallbackMethod = "getSecuredDataFallback")
     @GetMapping("/secured")
     public Map<String, Object> getSecuredData() {
-        return  accountClient.getSecuredData();
+
+        log.debug("debug getSecuredData");
+
+        try{
+            return  circuitBreaker.executeSupplier(() -> accountClient.getSecuredData());
+        } catch (CallNotPermittedException e){
+            return Map.of("data", e.getMessage());
+        } catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+            return Map.of("data", e.getMessage());
+        }
     }
+
+//    public Map<String, Object> getSecuredDataFallback(Throwable t) {
+//        return Map.of("data","default value");
+//    }
 }

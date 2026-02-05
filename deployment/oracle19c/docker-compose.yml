@@ -8,15 +8,15 @@ services:
       ORACLE_PWD: Oracle@168
       ENABLE_ARCHIVELOG: true
     volumes:
+      - ./init_scripts:/opt/oracle/scripts/startup
       - oracle_data_itp:/opt/oracle/oradata
-      # Fast Recovery Area (MANDATORY for archivelog + LogMiner)
-#      - oracle_fra_itp:/opt/oracle/fast_recovery_area
+      - oracle_fra_itp:/opt/oracle/fast_recovery_area
     networks:
       - itp-net
 
 volumes:
   oracle_data_itp:
-#  oracle_fra_itp:
+  oracle_fra_itp:
 
 networks:
   itp-net:

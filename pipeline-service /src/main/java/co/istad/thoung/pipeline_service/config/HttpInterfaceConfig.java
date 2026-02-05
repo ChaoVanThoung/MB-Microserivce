@@ -10,12 +10,12 @@ public class HttpInterfaceConfig {
 
     @Bean
     public JsonPlaceHolderClient jsonPlaceHolderClient(HttpInterfaceFactory httpInterfaceFactory){
-        return httpInterfaceFactory.createClient("https://jsonplaceholder.typicode.com", JsonPlaceHolderClient.class);
+        return httpInterfaceFactory.createNormalClient("https://jsonplaceholder.typicode.com", JsonPlaceHolderClient.class);
     }
 
     @Bean
     public AccountClient accountClient(HttpInterfaceFactory httpInterfaceFactory){
-        return httpInterfaceFactory.createClient("http://localhost:20260", AccountClient.class);
+        return httpInterfaceFactory.createLoadBalancedClient("http://account", AccountClient.class);
     }
 
 }

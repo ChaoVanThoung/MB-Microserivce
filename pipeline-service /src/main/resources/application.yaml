@@ -36,3 +36,80 @@ spring:
               - openid # Auto issue access token
               - profile # Get profile
               - email # Get email
+  cloud:
+    function:
+      definition: processProduct;processMessage;processProductDetail;processDebeziumProduct;processDebeziumOracle
+    stream:
+      bindings:
+        processProductDetail-in-0:
+          destination: product-detail # topic_name
+          group: monitor-group2 # consumer_group_id
+          content-type: application/json
+        processProduct-in-0:
+          destination: test-product # topic_name
+          group: monitor-group # consumer_group_id
+          content-type: application/json
+        processMessage-in-0:
+          destination: test-topic
+        processProductDetail-out-0:
+          destination: processed-product-detail
+          content-type: application/json
+
+        # --- New binding for Debezium CDC (Avro) ---
+        processDebeziumProduct-in-0:
+          destination: dbz_server.public.products
+          group: debezium-consumer-group
+#          content-type: application/avro
+#        processDebeziumProduct-out-0:
+#          destination: dbz_server.public.products
+#          group: debezium-consumer-group
+#          content-type: application/avro
+
+        processDebeziumOracle-in-0:
+          destination: ITP.CORE_BANKING.RECORD_XML
+          group: debezium-xml-consumer-group
+
+      kafka:
+        binder:
+          brokers: localhost:29092,localhost:29094,localhost:29096
+          configuration:
+            auto.offset.reset: earliest
+
+        bindings:
+          processDebeziumProduct-in-0:
+            consumer:
+              configuration:
+                key.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                schema.registry.url: http://localhost:8081
+                specific.avro.reader: false
+          processDebeziumOracle-in-0:
+            consumer:
+              configuration:
+                key.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                schema.registry.url: http://localhost:8081
+
+
+# Resilience4J
+resilience4j:
+  circuitbreaker:
+    instances:
+      account:
+        sliding-window-size: 10
+        failure-rate-threshold: 50 # Percentages
+        permitted-number-of-calls-in-half-open-state: 2
+        wait-duration-in-open-state: 10000
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
+#logging
+logging:
+  level:
+    co.istad.thoung.pipeline_service: debug

@@ -13,13 +13,29 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 public class HttpInterfaceFactory {
 
     private final OAuth2AuthorizedClientManager auth2AuthorizedClientManager;
+    private final WebClient.Builder loadBalancedWebClientBuilder;
 
-    public <T> T createClient(String baseUrl, Class<T> interfaceClass) {
+    public <T> T createNormalClient(String basUrl, Class<T> interfaceClass) {
+        WebClient webClient = WebClient.builder()
+                .baseUrl(basUrl)
+                .build();
+        return createClient(webClient, interfaceClass);
+    }
+
+    public <T> T createLoadBalancedClient(String baseUrl, Class<T> interfaceClass) {
 
         var oauth2 = new ServletOAuth2AuthorizedClientExchangeFilterFunction(auth2AuthorizedClientManager);
         oauth2.setDefaultClientRegistrationId("itp-standard");
 
-        WebClient webClient = WebClient.builder()
+        // without loadbalanced
+//        WebClient webClient = WebClient.builder()
+//                .baseUrl(baseUrl)
+//                .apply(oauth2.oauth2Configuration())
+//                .build();
+//        return createClient(webClient, interfaceClass);
+
+        // with loadbalanced
+        WebClient webClient = loadBalancedWebClientBuilder
                 .baseUrl(baseUrl)
                 .apply(oauth2.oauth2Configuration())
                 .build();

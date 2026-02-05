@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/account-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/account-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/customer-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/customer-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/front-bff.main.iml" filepath="$PROJECT_DIR$/.idea/modules/front-bff.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway-server.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway-server.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ipt-identity-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ipt-identity-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/itp-micro.iml" filepath="$PROJECT_DIR$/.idea/itp-micro.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/pipeline-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/pipeline-service.main.iml" />
